@@ -1,0 +1,71 @@
+time:
+    data: |
+      18:42:41.321 PST Sun Feb 8 2009
+      12:18:42.123 CET Sun Feb 14 2021
+      08:15:00.0 PST Mon Okt 31 2020
+    template: |
+      Value Year (\d+)
+      Value MonthDay (\d+)
+      Value Month (\w+)
+      Value Timezone (\S+)
+      Value Time (..:..:..)
+
+      Start
+        ^${Time}.* ${Timezone} \w+ ${Month} ${MonthDay} ${Year} -> Record
+
+cdp neighbor:
+    data: |
+      Capability Codes: R - Router, T - Trans Bridge, B- Source Route Bridge
+              S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone
+
+      Device ID         Local Intrfce Holdtme    Capability   Platform   Port ID
+      R1-PBX            Gig 1/0/10    144          R S I      2811       Fas 0/0
+      TS-1              Gig 1/0/39    122          R          2611       Eth 0/1
+      Cisco-WAP-N       Gig 1/0/1     120          T I        AIR-AP125  Gig 0
+      SEP04FE7F689D33   Gig 1/0/2     125          H P        IP Phone   Port 1
+      SEP000DBC50FCD1   Gig 1/0/4     147          H P        IP Phone   Port 1
+      SEP00124362C4D2   Gig 1/0/42    147          H P        IP Phone   Port 1
+    template: |
+      Value Required NEIGHBOR (\S+)
+      Value LOCAL_INTERFACE (\S+(?:\s\S+)?)
+      Value CAPABILITY ((?:\w\s)*\w)
+      Value PLATFORM ((?:[IiPp]{2}\s)?\S+)
+      Value NEIGHBOR_INTERFACE (.+?)
+
+      Start
+        ^Device.*ID -> CDP
+        # Capture time-stamp if vty line has command time-stamping turned on
+        ^Load\s+for\s+
+        ^Time\s+source\s+is
+
+      CDP
+        ^${NEIGHBOR}$$
+        ^\s*${LOCAL_INTERFACE}\s+\d+\s+${CAPABILITY}\s+${PLATFORM}\s+${NEIGHBOR_INTERFACE}\s*$$ -> Record
+        ^${NEIGHBOR}\s+${LOCAL_INTERFACE}\s+\d+\s+${CAPABILITY}\s+${PLATFORM}\s+${NEIGHBOR_INTERFACE}\s*$$ -> Record
+
+arp:
+    data: |
+      Protocol  Address              Age(min)       Hardware Addr     Type      Interface
+      Internet  172.16.233.229       -              0000.0c59.f892    ARPA      Ethernet0/0
+      Internet  172.16.233.218       -              0000.0c07.ac00    ARPA      Ethernet0/0
+      Internet  172.16.233.19        -              0000.0c63.1300    ARPA      Ethernet0/0
+      Internet  172.16.233.209       -              0000.0c36.6965    ARPA      Ethernet0/0
+      Internet  172.16.168.11        -              0000.0c63.1300    ARPA      Ethernet0/0
+      Internet  172.16.168.254       9              0000.0c36.6965    ARPA      Ethernet0/0 
+      Internet  10.0.0.0             -              aabb.cc03.8200    SRP-A
+    template: |
+      Value Required PROTOCOL (\S+)
+      Value Required ADDRESS (\d+\.\d+\.\d+\.\d+)
+      Value Required AGE (\S+)
+      Value Required MAC (\S+)
+      Value Required TYPE (\S+)
+      Value INTERFACE (\S+)
+
+      Start
+        ^Protocol\s+Address\s+Age\s*\(min\)\s+Hardware Addr\s+Type\s+Interface
+        ^${PROTOCOL}\s+${ADDRESS}\s+${AGE}\s+${MAC}\s+${TYPE}\s+${INTERFACE} -> Record
+        ^${PROTOCOL}\s+${ADDRESS}\s+${AGE}\s+${MAC}\s+${TYPE} -> Record
+        # Capture time-stamp if vty line has command time-stamping turned on
+        ^Load\s+for\s+
+        ^Time\s+source\s+is
+        ^. -> Error 
