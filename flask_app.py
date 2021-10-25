@@ -5,12 +5,15 @@ from flask import Flask, render_template, request, Response, url_for, jsonify
 from textfsm import TextFSM
 
 app = Flask(__name__, static_url_path="/static")
-app.config['JSON_SORT_KEYS'] = False
+app.config["JSON_SORT_KEYS"] = False
+
+
+config = {"name": "TextFSM", "data": "RAW", "rendered": "JSON"}
 
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", **config)
 
 
 @app.route("/examples")
@@ -35,7 +38,7 @@ def rend():
         return resp
     textFSM_template = data.get("template", "")
     raw_data = data.get("data")
-    
+
     try:
         template = io.StringIO(textFSM_template)
         parser = TextFSM(template)
