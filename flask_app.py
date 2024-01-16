@@ -9,7 +9,7 @@ app.json.sort_keys = False
 app.config.update(
     TITLE="TextFSM",
     SUBTITLE="Playground for TextFSM templates",
-    GITHUB="https://github.com/infrastructureAsCode-ch/ttp101/",
+    GITHUB="https://github.com/infrastructureAsCode-ch/textFSM101/",
     data_textarea="RAW",
     template_textarea="TextFSM",
     rendered_textarea="JSON",     
