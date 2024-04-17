@@ -8,7 +8,7 @@ authors = ["ubaumann <github@m.ubaumann.ch>"]
 python = "^3.10"
 flask = "^3"
 pyaml = "^23"
-gunicorn = "^21"
+gunicorn = "^22"
 textfsm = "^1.1.3"
 
 [tool.poetry.dev-dependencies]
