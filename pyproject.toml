@@ -1,21 +1,16 @@
-[tool.poetry]
+[project]
 name = "textFSM101"
 version = "0.2.0"
-description = ""
-authors = ["ubaumann <github@m.ubaumann.ch>"]
+authors = [
+    {name = "ubaumann", email = "github@m.ubaumann.ch"},
+]
+requires-python = ">=3.10"
+dependencies = [
+    "flask>=3",
+    "pyaml>=23",
+    "gunicorn>=23",
+    "textfsm>=1.1.3",
+]
 
-[tool.poetry.dependencies]
-python = "^3.10"
-flask = "^3"
-pyaml = "^23"
-gunicorn = "^23"
-textfsm = "^1.1.3"
-
-[tool.poetry.dev-dependencies]
-black = "^24"
-pylama = "^8"
-rich = "^13"
-
-[build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+[dependency-groups]
+dev = ["black>=24", "pylama>=8", "rich>=13"]

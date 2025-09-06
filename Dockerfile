@@ -4,21 +4,14 @@ FROM python:3.10
 WORKDIR /playground
 RUN useradd -m iac
 
-ENV PATH="/root/.local/bin:$PATH" \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PYTHONUNBUFFERED=1
-
-
-RUN apt-get update && apt-get install curl -y \
-    && rm -rf /var/lib/apt/lists/* \
-    && curl -sSL https://install.python-poetry.org | python3 \
-    && poetry config virtualenvs.create false
+# Install uv.
+COPY --from=ghcr.io/astral-sh/uv:latest /uv /uvx /bin/
 
 COPY --chown=iac:iac pyproject.toml .
-COPY --chown=iac:iac poetry.lock .
+COPY --chown=iac:iac uv.lock .
 
-# poetry does not support subdirectory yet
-RUN poetry install --no-dev --no-interaction --no-ansi
+ENV UV_PROJECT_ENVIRONMENT=/usr/local
+RUN uv sync --frozen --no-cache --no-dev 
 
 COPY --chown=iac:iac . .
 
